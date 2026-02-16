@@ -1,0 +1,25 @@
+# --- Secrets & Environment ---
+.env
+*.env
+
+# --- Python Clutter ---
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.pytest_cache/
+
+# --- Large Data & Results ---
+data/*.jsonl
+experiments/*.csv
+
+# --- Mac / System Clutter ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# --- IDEs ---
+.vscode/
+.idea/
