@@ -40,7 +40,7 @@ plt.title('Model Tradeoffs: Accuracy vs. Latency')
 plt.xlabel('Mean Latency (s)')
 plt.ylabel('Mean Accuracy')
 plt.legend(title='Models', bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
-plt.savefig('experiments/01_scatter_tradeoffs.png', bbox_inches='tight')
+plt.savefig('experiments/01_pareto_frontier.png', bbox_inches='tight')
 
 # --- 3. HEATMAP (Context Sensitivity) ---
 plt.figure(figsize=(14, 8))
