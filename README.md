@@ -1,6 +1,6 @@
 # Failure Modes and Tradeoffs in Retrieval-Augmented Generation (RAG)
 
-This framework quantifies architectural tradeoffs between retrieval strategies and LLM performance by stress-testing 15+ models under varying context density. The project identifies the Pareto Frontier of inference latency versus accuracy and maps performance degradation across long-context retrieval windows.
+This framework quantifies architectural tradeoffs between retrieval strategies and LLM performance by stress-testing 10+ models under varying context density. The project identifies the Pareto Frontier of inference latency versus accuracy and maps performance degradation across long-context retrieval windows.
 
 ## 📊 Experimental Results & Analysis
 
