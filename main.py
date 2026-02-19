@@ -6,6 +6,18 @@ from src.retrieval import RAGRetriever
 from src.models import LLMInterface
 from tqdm import tqdm
 
+from dotenv import load_dotenv
+from huggingface_hub import login
+
+def token_login():
+    load_dotenv()
+    hf_token = os.getenv("HF_TOKEN")
+    if hf_token:
+        login(hf_token)
+    else:
+        print("Warning: HF_TOKEN not found in .env file.")
+
+
 def run_professional_benchmarks(num_samples=100):
     os.makedirs("experiments", exist_ok=True)
     results_path = "experiments/pareto_data.csv"
@@ -14,9 +26,31 @@ def run_professional_benchmarks(num_samples=100):
     models = [
         "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         "microsoft/phi-2",
+        "stabilityai/stablelm-zephyr-3b",
+        
+        "Qwen/Qwen2.5-1.5B-Instruct",     
+        "HuggingFaceTB/SmolLM-135M",       
+        "EleutherAI/pythia-1.4b-deduped",  
+
+        "HuggingFaceTB/SmolLM2-1.7B-Instruct", 
+
         "google/gemma-2b",
-        "stabilityai/stablelm-zephyr-3b"
-    ]
+        "google/gemma-3-1b-it",  
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+
+
+        
+        "microsoft/Phi-4-mini-instruct",      
+        "Qwen/Qwen3-0.6B",     
+        
+        "HuggingFaceTB/SmolLM2-135M-Instruct",
+
+        "meta-llama/Llama-3.2-1B-Instruct",   
+        "meta-llama/Llama-3.2-3B-Instruct",    
+    ]                 
+
+
+    
     chunk_sizes = [128, 512, 1024] 
     top_k_values = [1, 5]
 
@@ -90,4 +124,5 @@ def run_professional_benchmarks(num_samples=100):
     print(f"\n[SUCCESS] Grid search complete. Results in {results_path}")
 
 if __name__ == "__main__":
+    token_login()
     run_professional_benchmarks(num_samples=50)
