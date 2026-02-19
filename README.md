@@ -1,50 +1,51 @@
 # Failure Modes and Tradeoffs in Retrieval-Augmented Generation (RAG)
 
-This repository contains a framework for quantifying the architectural tradeoffs between retrieval strategies and LLM performance. By stress-testing 10+ models under varying noise conditions, this project maps the **Pareto Frontier** of inference latency versus accuracy and identifies critical "failure cliffs" in long-context retrieval.
-
-## 🚀 Key Achievements
-* **Characterized RAG Failure Modes:** Identified performance degradation patterns (e.g., "Lost-in-the-Middle") by varying chunk sizes (128–1024) and Top-K retrieval density.
-* **Pareto Frontier Mapping:** Quantified the optimal balance between inference speed and model grounding using **PyTorch**, **FAISS**, and **HuggingFace Transformers**.
-* **Quantified Architectural Tradeoffs:** Conducted systematic ablations to determine how model size (1B vs 3B) affects reasoning robustness under retrieval noise.
-* **Responsible AI & Telemetry:** Implemented structured evaluation loops to identify hallucinations and context-window truncation.
-
----
+This framework quantifies architectural tradeoffs between retrieval strategies and LLM performance by stress-testing 15+ models under varying context density. The project identifies the Pareto Frontier of inference latency versus accuracy and maps performance degradation across long-context retrieval windows.
 
 ## 📊 Experimental Results & Analysis
 
-### 1. The Pareto Frontier: Accuracy vs. Latency
-Our benchmarking reveals that model parameter count does not linearly correlate with RAG efficiency. 
+### 1. Model Tradeoffs: Accuracy vs. Latency
+Benchmarking reveals that modern distilled and small-parameter models redefine RAG efficiency:
 
-* **StableLM-Zephyr-3B** emerged as the **Pareto Optimal** choice, delivering the highest accuracy (~59%) with the lowest relative latency.
-* Smaller models like **TinyLlama-1.1B** exhibited dominated behavior—higher latency with lower accuracy—likely due to less efficient attention mechanisms during long-prompt processing on CPU/MPS backends.
+* **Top Performers:** **google/gemma-3-1b-it** and **meta-llama/Llama-3.2-1B-Instruct** occupy the high-efficiency frontier, delivering near-perfect accuracy with minimal latency.
+* **Reasoning Value:** **microsoft/Phi-4-mini-instruct** and **meta-llama/Llama-3.2-3B-Instruct** provide the highest accuracy ceiling (~78-79%) for complex reasoning, albeit with a 4-5x latency penalty compared to 1B models.
+* **Legacy Comparison:** Older architectures like **TinyLlama-1.1B** and **phi-2** are now dominated, showing significantly lower accuracy despite similar or higher latency profiles.
 
-### 2. Failure Mode: The "Context Cliff"
-By varying the document length from 512 to 16,000+ tokens, we identified a critical failure mode:
+### 2. Retrieval Sensitivity: Positional Bias
+Analysis of retrieval accuracy by information position (Needle-in-a-Haystack) highlights architectural recall limits:
 
-* **Chunking Granularity:** Smaller chunk sizes (128 tokens) demonstrated significantly higher resilience to retrieval noise, maintaining ~80% accuracy across long contexts.
-* **The Truncation Cliff:** Larger chunk sizes (1024 tokens) suffered a massive performance collapse beyond 2,000 tokens. This quantifies the **Positional Embedding Limit**, where retrieved context exceeds the model's native context window (2048 tokens), leading to catastrophic forgetting of the "needle."
+* **Primacy Bias:** Nearly all models achieve 90-100% accuracy when the relevant information is located in the Top (0-33%) of the context.
+* **The Lost-in-the-Middle Phenomenon:** Accuracy drops by up to 40% for models like **HuggingFaceTB/SmolLM-135M** and **EleutherAI/pythia-1.4b** when the answer is buried in the middle (33-66%) of the prompt.
+* **Context Robustness:** **Gemma-3** and **Llama-3.2** variants maintain the most consistent recall across all positions, demonstrating superior long-context attention training.
 
----
+### 3. Failure Mode: The Context Cliff
+Systematic testing of document lengths from 512 to 16,000+ tokens identified critical scaling limits:
+
+* **Chunking Resilience:** Small chunk sizes (128 tokens) maintain high accuracy (~80%+) even as total document length scales, effectively filtering noise.
+* **Performance Collapse:** Larger chunk sizes (1024 tokens) experience a sharp accuracy decline beyond 2,000 tokens, quantifying the impact of context window saturation and positional embedding drift.
+
+## 🚀 Key Achievements
+* **Characterized RAG Failure Modes:** Quantified performance decay patterns by isolating chunk size (128–1024) and Top-K retrieval density variables.
+* **Pareto Frontier Mapping:** Established optimal balance between inference speed and model grounding using **PyTorch**, **FAISS**, and **HuggingFace Transformers**.
+* **Quantified Architectural Tradeoffs:** Conducted systematic ablations to determine how model size (1B vs 3B) and architecture (Gemma vs Llama vs Phi) affect reasoning robustness.
+* **Telemetry & Observability:** Implemented structured evaluation loops to detect hallucinations, context-window truncation, and latency scaling per 1k tokens.
 
 ## 🛠 Tech Stack
-- **Inference:** PyTorch, HuggingFace Transformers
+- **Inference:** PyTorch, HuggingFace Transformers (Accelerated with Apple Metal/MPS)
 - **Vector Database:** FAISS (Facebook AI Similarity Search)
 - **Data Science:** Pandas, Seaborn, Matplotlib
-- **Experiment Tracking:** Custom Checkpointing & Telemetry System
-
----
+- **Automation:** Custom experiment orchestrator with built-in checkpointing and resume logic
 
 ## 📂 Project Structure
 ```text
 ├── src/
-│   ├── models.py          # Unified LLM Interface
-│   ├── retrieval.py       # FAISS indexing and search logic
-│   └── data_generator.py  # Synthetic "Needle-in-a-Haystack" generator
+│   ├── models.py        # Unified LLM Interface (MPS/CPU optimized)
+│   ├── retrieval.py     # FAISS indexing and chunking logic
+│   └── data_generator.py # Synthetic Needle-in-a-Haystack generator
 ├── notebooks/
-│   └── analysis.py        # Pareto and Failure Mode visualization
-├── experiments/           # Raw CSV logs and generated plots
-├── main.py                # Grid search & experiment orchestrator
-└── environment.yml        # Reproducible Conda environment
+│   └── analysis.py      # Pareto, Heatmap, and Failure Mode visualization
+├── experiments/         # Raw CSV logs and diagnostic plots
+└── main.py              # Grid search & experiment orchestrator
 ```
 
 ## 🔧 Setup & Reproducibility
