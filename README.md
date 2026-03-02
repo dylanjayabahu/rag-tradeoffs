@@ -2,6 +2,8 @@
 
 This framework quantifies architectural tradeoffs between retrieval strategies and LLM performance by stress-testing 10+ models under varying context density. The project identifies the Pareto Frontier of inference latency versus accuracy and maps performance degradation across long-context retrieval windows.
 
+<img width="1422" height="550" alt="image" src="https://github.com/user-attachments/assets/8d5d54c6-c473-4535-ad86-3322137a5aa3" />
+
 ## 📊 Experimental Results & Analysis
 
 ### 1. Model Tradeoffs: Accuracy vs. Latency
