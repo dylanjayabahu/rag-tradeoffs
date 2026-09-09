@@ -54,7 +54,7 @@ Systematic testing of document lengths from 512 to 16,000+ tokens identified cri
 
 ### Clone and Install
 ```bash
-git clone https://github.com/yourusername/rag-tradeoffs.git
+git clone https://github.com/dylanjayabahu/rag-tradeoffs.git
 cd rag-tradeoffs
 conda env create -f environment.yml
 conda activate rag
